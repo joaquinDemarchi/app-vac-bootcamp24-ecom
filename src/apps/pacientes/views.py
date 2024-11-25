@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
 from .models import Paciente
@@ -11,8 +12,9 @@ def lista(request):
     return render(request, 'pacientes/lista.html', {})
 """
 
-class Lista(ListView):
-    template_name = 'pacientes/lista.html'
+
+class Lista(LoginRequiredMixin,ListView):
+    template_name = 'pacientes/lista_new.html'
     model = Paciente
     context_object_name = "pacientes"
     paginate_by = 1
@@ -21,7 +23,7 @@ class Lista(ListView):
         ctx = super(Lista, self).get_context_data(**kwargs)
         ctx["titulo"] = "LISTA DE PACIENTES"
         return ctx
-    
+
     def get_queryset(self):
         query = self.model.objects.all()
         print(self.request.method)
@@ -32,8 +34,9 @@ class Lista(ListView):
         print("query", query)
         return query.order_by("apellido")
 
-class Nuevo(CreateView):
-    template_name = 'pacientes/nuevo.html'
+
+class Nuevo(LoginRequiredMixin,CreateView):
+    template_name = 'pacientes/nuevo_new.html'
     model = Paciente
     form_class = FormPaciente
     success_url = reverse_lazy("pacientes:lista")
@@ -42,6 +45,7 @@ class Nuevo(CreateView):
         ctx = super(Nuevo, self).get_context_data(**kwargs)
         ctx["titulo"] = "NUEVO PACIENTE"
         return ctx
+
 
 """
 
